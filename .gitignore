@@ -1,0 +1,18 @@
+# Python environment
+.venv/
+__pycache__/
+*.pyc
+
+# Temporary application directories
+uploads/*
+gens/*
+
+# Keep directories but ignore files inside
+!uploads/.gitkeep
+!gens/.gitkeep
+
+# IDEs and System files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

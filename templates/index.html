@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Passing Certificate Generator</title>
+    <!-- Google Fonts: Inter & Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 50%, #cbd5e1 100%);
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-border: rgba(255, 255, 255, 0.5);
+            --accent-gradient: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --success: #059669;
+            --danger: #dc2626;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-primary);
+            width: 100%;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Decorative glowing pastel backdrops */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
+            top: -100px;
+            left: -100px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(124, 58, 237, 0.06) 0%, transparent 70%);
+            bottom: -100px;
+            right: -100px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            margin: 0 auto;
+            padding: 20px;
+            z-index: 10;
+        }
+
+        /* Main Glassmorphic Card */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-gradient);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .header h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #334155;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* Modern Drag & Drop Zone */
+        .dropzone {
+            border: 2px dashed rgba(99, 102, 241, 0.25);
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 16px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .dropzone:hover, .dropzone.dragover {
+            border-color: #7c3aed;
+            background: rgba(124, 58, 237, 0.03);
+            box-shadow: 0 0 20px rgba(124, 58, 237, 0.08);
+        }
+
+        .dropzone i {
+            font-size: 3rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .dropzone:hover i {
+            transform: translateY(-5px);
+        }
+
+        .dropzone h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #1e293b;
+        }
+
+        .dropzone p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        /* File List Selection Preview */
+        .file-list {
+            margin-top: 15px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            padding: 12px 16px;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            display: none;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        .file-item:last-child {
+            border-bottom: none;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-info i {
+            color: #7c3aed;
+        }
+
+        .file-status {
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .status-marks { background: rgba(99, 102, 241, 0.1); color: #4f46e5; }
+        .status-results { background: rgba(16, 185, 129, 0.1); color: #059669; }
+        .status-unknown { background: rgba(239, 68, 68, 0.1); color: #dc2626; }
+
+        /* Premium Select Dropdown */
+        .custom-select {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 12px;
+            padding: 14px 18px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+            background-repeat: no-repeat;
+            background-position: right 18px center;
+            background-size: 16px;
+        }
+
+        .custom-select:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.15);
+        }
+
+        /* Toggle Switch / Revaluation Checkbox */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-top: 10px;
+        }
+
+        .toggle-label {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #334155;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 26px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.1);
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider::before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        input:checked + .slider {
+            background: var(--accent-gradient);
+        }
+
+        input:checked + .slider::before {
+            transform: translateX(22px);
+        }
+
+        /* Glowing Submit Button */
+        .btn-submit {
+            width: 100%;
+            background: var(--accent-gradient);
+            border: none;
+            border-radius: 12px;
+            padding: 16px;
+            color: white;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+            filter: brightness(1.05);
+        }
+
+        .btn-submit:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn-submit:disabled {
+            background: #cbd5e1;
+            color: #94a3b8;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Progress / Log Panel */
+        .progress-panel {
+            margin-top: 25px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            padding-top: 25px;
+            display: none;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--accent-gradient);
+            border-radius: 4px;
+            transition: width 0.4s ease;
+        }
+
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .status-text {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .log-box {
+            background: #f8fafc;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+            height: 120px;
+            padding: 12px 16px;
+            overflow-y: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.78rem;
+            color: #065f46;
+            scroll-behavior: smooth;
+        }
+
+        .log-line {
+            margin-bottom: 4px;
+            line-height: 1.4;
+        }
+
+        /* Alert Panel */
+        .alert {
+            margin-top: 20px;
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .alert-danger {
+            background: rgba(220, 38, 38, 0.08);
+            border: 1px solid rgba(220, 38, 38, 0.15);
+            color: #b91c1c;
+        }
+
+        .alert-success {
+            background: rgba(5, 150, 105, 0.08);
+            border: 1px solid rgba(5, 150, 105, 0.15);
+            color: #047857;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 2px solid transparent;
+            border-top: 2px solid white;
+            border-right: 2px solid white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <div class="header">
+            <h1>Passing Certificate</h1>
+            <p>Generate passing certificates automatically from Marks & Results</p>
+        </div>
+
+        <form id="uploadForm">
+            <!-- File Upload Dropzone -->
+            <div class="form-group">
+                <label class="form-label">Database Files</label>
+                <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <h3>Upload DBF or CSV Files</h3>
+                    <p>Drag & drop or click to select both <b>marks</b> and <b>results</b> files</p>
+                    <input type="file" id="fileInput" name="files" multiple accept=".dbf,.csv" class="file-input" onchange="handleFileSelect(event)">
+                </div>
+                
+                <!-- File Selection Preview -->
+                <div class="file-list" id="fileList"></div>
+            </div>
+
+            <!-- Passing Type Selection -->
+            <div class="form-group">
+                <label class="form-label" for="passingType">Passing Type</label>
+                <select name="passing_type" id="passingType" class="custom-select">
+                    <option value="BLACK">BLACK PASSING</option>
+                    <option value="RED">RED PASSING</option>
+                </select>
+            </div>
+
+            <!-- Revaluation Option -->
+            <div class="form-group">
+                <div class="toggle-container">
+                    <span class="toggle-label">Is it Revaluation?</span>
+                    <label class="switch">
+                        <input type="checkbox" name="revaluation" id="revaluation">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Print Result Declared Date Option -->
+            <div class="form-group">
+                <div class="toggle-container">
+                    <span class="toggle-label">Print Result Declared Date?</span>
+                    <label class="switch">
+                        <input type="checkbox" name="print_rd_date" id="printRdDate">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Display Signature Option -->
+            <div class="form-group">
+                <div class="toggle-container">
+                    <span class="toggle-label">Display Signature Image?</span>
+                    <label class="switch">
+                        <input type="checkbox" name="display_sign" id="displaySign" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Designation Selection -->
+            <div class="form-group">
+                <label class="form-label" for="designation">Designation</label>
+                <select name="designation" id="designation" class="custom-select">
+                    <option value="DIRECTOR">DIRECTOR</option>
+                    <option value="I/C DIRECTOR">I/C DIRECTOR</option>
+                </select>
+            </div>
+
+            <!-- Signature Selection -->
+            <div class="form-group">
+                <label class="form-label" for="signature">Authorized Signature</label>
+                <select name="signature" id="signature" class="custom-select">
+                    {% for sig in signatures %}
+                    <option value="{{ sig }}">{{ sig }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Action Button -->
+            <button type="submit" class="btn-submit" id="submitBtn" disabled>
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Certificates
+            </button>
+        </form>
+
+        <!-- Progress Panel -->
+        <div class="progress-panel" id="progressPanel">
+            <div class="status-header">
+                <span>Status: <span class="status-text" id="statusText">Starting...</span></span>
+                <span id="progressPercent">0%</span>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="log-box" id="logBox"></div>
+        </div>
+
+        <!-- Alert Message Container -->
+        <div id="alertContainer"></div>
+    </div>
+</div>
+
+<script>
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+    const fileList = document.getElementById('fileList');
+    const submitBtn = document.getElementById('submitBtn');
+    const uploadForm = document.getElementById('uploadForm');
+    const alertContainer = document.getElementById('alertContainer');
+    const progressPanel = document.getElementById('progressPanel');
+    const progressBar = document.getElementById('progressBar');
+    const progressPercent = document.getElementById('progressPercent');
+    const statusText = document.getElementById('statusText');
+    const logBox = document.getElementById('logBox');
+
+    let selectedFiles = [];
+
+    // Drag and Drop listeners
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            dropzone.classList.add('dragover');
+        }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('dragover');
+        }, false);
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        handleFiles(files);
+    });
+
+    function handleFileSelect(event) {
+        const files = event.target.files;
+        handleFiles(files);
+    }
+
+    function handleFiles(files) {
+        selectedFiles = Array.from(files).slice(0, 2); // Limit to 2 files maximum
+        updateFilePreview();
+        validateForm();
+    }
+
+    function updateFilePreview() {
+        if (selectedFiles.length === 0) {
+            fileList.style.display = 'none';
+            return;
+        }
+
+        fileList.innerHTML = '';
+        fileList.style.display = 'block';
+
+        selectedFiles.forEach(file => {
+            const name = file.name.toLowerCase();
+            let fileType = 'unknown';
+            let fileLabel = 'Unknown File';
+
+            if (name.includes('mark')) {
+                fileType = 'marks';
+                fileLabel = 'Marks File';
+            } else if (name.includes('result')) {
+                fileType = 'results';
+                fileLabel = 'Results File';
+            }
+
+            const item = document.createElement('div');
+            item.className = 'file-item';
+            item.innerHTML = `
+                <div class="file-info">
+                    <i class="fa-solid fa-file-invoice"></i>
+                    <span>${file.name}</span>
+                </div>
+                <span class="file-status status-${fileType}">${fileLabel}</span>
+            `;
+            fileList.appendChild(item);
+        });
+    }
+
+    function validateForm() {
+        // Active button only when two files are uploaded
+        if (selectedFiles.length >= 2) {
+            submitBtn.disabled = false;
+        } else {
+            submitBtn.disabled = true;
+        }
+    }
+
+    function addLog(message) {
+        const line = document.createElement('div');
+        line.className = 'log-line';
+        line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+        logBox.appendChild(line);
+        logBox.scrollTop = logBox.scrollHeight;
+    }
+
+    function updateProgress(percent, text) {
+        progressBar.style.width = percent + '%';
+        progressPercent.textContent = percent + '%';
+        statusText.textContent = text;
+        addLog(text);
+    }
+
+    function showAlert(type, message) {
+        alertContainer.innerHTML = `
+            <div class="alert alert-${type}">
+                <i class="fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation'}"></i>
+                <div>${message}</div>
+            </div>
+        `;
+    }
+
+    uploadForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        alertContainer.innerHTML = '';
+        progressPanel.style.display = 'block';
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner"></span> Processing...';
+
+        logBox.innerHTML = '';
+        updateProgress(10, 'Initializing file reading...');
+
+        const formData = new FormData();
+        selectedFiles.forEach(file => {
+            formData.append('files', file);
+        });
+        
+        formData.append('signature', document.getElementById('signature').value);
+        formData.append('designation', document.getElementById('designation').value);
+        formData.append('display_sign', document.getElementById('displaySign').checked);
+        formData.append('revaluation', document.getElementById('revaluation').checked);
+        formData.append('print_rd_date', document.getElementById('printRdDate').checked);
+        formData.append('passing_type', document.getElementById('passingType').value);
+
+        // Periodically poll status during execution
+        let isComplete = false;
+        const pollInterval = setInterval(async () => {
+            if (isComplete) {
+                clearInterval(pollInterval);
+                return;
+            }
+            try {
+                const res = await fetch('/status');
+                const data = await res.json();
+                if (data.message) {
+                    addLog(data.message);
+                    // Match step names to percentage increases
+                    if (data.message.includes('Parsing')) {
+                        updateProgress(30, data.message);
+                    } else if (data.message.includes('Processing')) {
+                        updateProgress(50, data.message);
+                    } else if (data.message.includes('Generating')) {
+                        updateProgress(75, data.message);
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }, 1500);
+
+        try {
+            updateProgress(20, 'Uploading files...');
+            const response = await fetch('/generate-certificates', {
+                method: 'POST',
+                body: formData
+            });
+
+            isComplete = true;
+            clearInterval(pollInterval);
+
+            if (response.ok) {
+                updateProgress(100, 'Certificate PDF generated successfully! Downloading...');
+                showAlert('success', 'Certificates generated successfully! Download has started.');
+                
+                // Trigger file download
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'certificates.pdf';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+            } else {
+                const errText = await response.text();
+                updateProgress(0, 'Failed.');
+                showAlert('danger', `Generation Error: ${errText}`);
+            }
+        } catch (err) {
+            isComplete = true;
+            clearInterval(pollInterval);
+            updateProgress(0, 'Error occurred.');
+            showAlert('danger', `Network Error: ${err.message}`);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Generate Certificates';
+        }
+    });
+</script>
+
+</body>
+</html>

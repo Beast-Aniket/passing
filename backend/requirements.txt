@@ -1,9 +1,0 @@
-Flask
-flask-cors
-pandas
-openpyxl
-opencv-python
-numpy
-python-docx
-xlrd
-fpdf2
