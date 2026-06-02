@@ -282,7 +282,7 @@ def generate_certificate_pdf(dataT, output_pdf_path, year, exam_month, course_na
     dataT = dataT.drop_duplicates(subset=['SEAT_NO'])
     
     # Easily tunable layout and spacing parameters
-    signature_right_offset = -15 # Distance from the right boundary. Negative value shifts box more right (default was 20)
+    signature_right_offset = -5  # Distance from the right boundary. Negative value shifts box more right (default was 20)
     signature_y_offset = 45     # Higher values shift signature box further up (default was 25)
     clg_seat_left_x = 55        # X coordinate for College Code and Seat No (shifted left from 65)
     clg_seat_top_y = 65         # Y coordinate for College Code line (shifted down from 95)
