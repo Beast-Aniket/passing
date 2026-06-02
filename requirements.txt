@@ -8,3 +8,4 @@ python-docx==1.1.2
 xlrd==2.0.1
 fpdf2==2.8.2
 mysql-connector-python>=9.0.0
+gunicorn
