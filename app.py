@@ -353,14 +353,14 @@ def generate_certificate_pdf(dataT, output_pdf_path, year, exam_month, course_na
         if pd.notnull(cgpa_val) and str(cgpa_val).strip() != '':
             cgpa = str(cgpa_val).strip()
             course_semester_text = f"PASSED THE {course_name} (CBCGS) EXAMINATION"
-            date_text = f"{year} {exam_month} WITH {cgpa} CGPI"
+            date_text = f"{exam_month.upper()} {year} WITH {cgpa} CGPI"
         elif pd.notnull(cgrade_val) and str(cgrade_val).strip() != '':
             grade = str(cgrade_val).strip()
             course_semester_text = f"PASSED THE {course_name} (CBSGS) EXAMINATION"
-            date_text = f"{year} {exam_month} AND WAS PLACED IN THE {grade} GRADE"
+            date_text = f"{exam_month.upper()} {year} AND WAS PLACED IN THE {grade} GRADE"
         else:
             course_semester_text = f"PASSED THE {course_name} (CBCGS) EXAMINATION"
-            date_text = f"{year} {exam_month} WITH N/A CGPI"
+            date_text = f"{exam_month.upper()} {year} WITH N/A CGPI"
             
         # Draw dynamic signature image if selected
         signature_width = 100
