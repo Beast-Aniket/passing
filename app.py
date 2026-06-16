@@ -350,8 +350,31 @@ def generate_certificate_pdf(dataT, output_pdf_path, year, exam_month, course_na
         cgpa_val = student.get('CGPA')
         cgrade_val = student.get('FINALGRADE') if 'FINALGRADE' in student else student.get('CGRADE')
         
+        # Look for ordinance columns: 'GCGPA', 'CLS_43', 'TOT_43'
+        ordinance_val = None
+        for col_name in ['GCGPA', 'CLS_43', 'TOT_43']:
+            if col_name in student:
+                val = student[col_name]
+                if pd.notnull(val) and str(val).strip() != '':
+                    val_clean = "".join(c for c in str(val) if c.isdigit() or c == '.')
+                    try:
+                        ordinance_val = float(val_clean)
+                        break
+                    except ValueError:
+                        pass
+
         if pd.notnull(cgpa_val) and str(cgpa_val).strip() != '':
-            cgpa = str(cgpa_val).strip()
+            cgpa_str = str(cgpa_val).strip()
+            cgpa_clean = "".join(c for c in cgpa_str if c.isdigit() or c == '.')
+            if ordinance_val is not None:
+                try:
+                    cgpa_float = float(cgpa_clean)
+                    total_cgpa = cgpa_float + ordinance_val
+                    cgpa = f"{total_cgpa:.2f}"
+                except ValueError:
+                    cgpa = cgpa_str
+            else:
+                cgpa = cgpa_str
             course_semester_text = f"PASSED THE {course_name} (CBCGS) EXAMINATION"
             date_text = f"{exam_month.upper()} {year} WITH {cgpa} CGPI"
         elif pd.notnull(cgrade_val) and str(cgrade_val).strip() != '':
